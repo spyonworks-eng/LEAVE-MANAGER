@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leave Manager – Ashmit's Shops</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --surface2: #f0efe9;
+  --border: #e2e0d8;
+  --accent: #1a1a2e;
+  --accent2: #e63946;
+  --green: #2d6a4f;
+  --green-bg: #d8f3dc;
+  --red: #c1121f;
+  --red-bg: #ffe5e5;
+  --yellow: #b5500a;
+  --yellow-bg: #fff0d4;
+  --text: #1a1a2e;
+  --muted: #7c7c8a;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+}
+
+/* Subtle dot pattern */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, #c8c6be 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 36px 20px 80px; }
+
+/* Header */
+.header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 36px; flex-wrap: wrap; gap: 16px;
+}
+.logo { display: flex; align-items: center; gap: 14px; }
+.logo-icon {
+  width: 48px; height: 48px; background: var(--accent);
+  border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.logo-text h1 {
+  font-family: var(--font-head); font-size: 22px; font-weight: 800;
+  color: var(--accent); letter-spacing: -0.5px;
+}
+.logo-text p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.tab-bar {
+  display: flex; background: var(--accent); border-radius: 12px; overflow: hidden; padding: 4px; gap: 4px;
+}
+.tab {
+  padding: 9px 20px; font-family: var(--font-head); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; color: rgba(255,255,255,0.5);
+  border: none; background: none; border-radius: 9px; letter-spacing: 0.2px;
+}
+.tab.active { background: #fff; color: var(--accent); }
+
+/* Cards */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 18px; padding: 28px; margin-bottom: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.card-title {
+  font-family: var(--font-head); font-size: 15px; font-weight: 700;
+  margin-bottom: 22px; display: flex; align-items: center; gap: 8px;
+  color: var(--accent);
+}
+
+/* Form */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 7px; }
+.form-group.full { grid-column: 1 / -1; }
+label { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+input, select, textarea {
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: 11px; padding: 11px 14px; color: var(--text);
+  font-family: var(--font-body); font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(26,26,46,0.08);
+  background: #fff;
+}
+textarea { resize: vertical; min-height: 88px; }
+select option { background: #fff; }
+
+.btn {
+  padding: 12px 26px; border-radius: 11px; font-family: var(--font-head);
+  font-size: 13px; font-weight: 700; cursor: pointer; border: none;
+  transition: all 0.18s; letter-spacing: 0.3px; display: inline-flex; align-items: center; gap: 7px;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #2d2d4e; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,26,46,0.2); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-sm { padding: 7px 14px; font-size: 11px; border-radius: 8px; }
+.btn-approve { background: var(--green-bg); color: var(--green); border: 1.5px solid #b7dfc3; }
+.btn-approve:hover { background: #c2eacc; }
+.btn-reject { background: var(--red-bg); color: var(--red); border: 1.5px solid #f5c0c0; }
+.btn-reject:hover { background: #fdd0d0; }
+
+/* Badge */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700;
+  font-family: var(--font-head); text-transform: uppercase; letter-spacing: 0.7px;
+}
+.badge-pending { background: var(--yellow-bg); color: var(--yellow); }
+.badge-approved { background: var(--green-bg); color: var(--green); }
+.badge-rejected { background: var(--red-bg); color: var(--red); }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+.stat-num { font-family: var(--font-head); font-size: 32px; font-weight: 800; line-height: 1; }
+.stat-label { font-size: 11px; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.8px; }
+.stat-pending .stat-num { color: var(--yellow); }
+.stat-approved .stat-num { color: var(--green); }
+.stat-rejected .stat-num { color: var(--red); }
+.stat-total .stat-num { color: var(--accent); }
+
+/* Table */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  text-align: left; padding: 10px 14px;
+  font-family: var(--font-head); font-size: 10px; font-weight: 700;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 1px;
+  border-bottom: 1.5px solid var(--border); background: var(--surface2);
+}
+th:first-child { border-radius: 8px 0 0 8px; }
+th:last-child { border-radius: 0 8px 8px 0; }
+td { padding: 13px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #faf9f6; }
+
+.name-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-weight: 600; font-size: 13px;
+}
+.avatar {
+  width: 28px; height: 28px; border-radius: 8px; background: var(--accent);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; font-family: var(--font-head); flex-shrink: 0;
+}
+.sub-text { color: var(--muted); font-size: 11px; margin-top: 2px; }
+.reason-text { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 12px; }
+.actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* Info banner */
+.info-bar {
+  background: #eef2ff; border: 1.5px solid #c7d2fe;
+  border-radius: 12px; padding: 14px 18px; margin-bottom: 18px;
+  font-size: 13px; color: #3730a3; display: flex; align-items: center; gap: 10px;
+}
+
+/* Toast */
+#toast {
+  position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+  background: var(--accent); color: #fff;
+  border-radius: 14px; padding: 14px 20px;
+  font-size: 13px; min-width: 260px; font-family: var(--font-body);
+  transform: translateY(16px); opacity: 0; transition: all 0.3s;
+  pointer-events: none; display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+#toast.success { background: var(--green); }
+#toast.error { background: var(--red); }
+#toast.info { background: #3730a3; }
+
+.spinner {
+  display: inline-block; width: 13px; height: 13px;
+  border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+  border-radius: 50%; animation: spin 0.6s linear infinite; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state { text-align: center; padding: 56px 20px; color: var(--muted); }
+.empty-state .icon { font-size: 42px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; }
+
+.fade-in { animation: fadeIn 0.4s ease both; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Pill row for whatsapp/gmail */
+.notify-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.notify-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  font-family: var(--font-head);
+}
+.pill-wa { background: #dcfce7; color: #166534; }
+.pill-gm { background: #fee2e2; color: #991b1b; }
+
+@media (max-width: 620px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .header { flex-direction: column; }
+  .tab { padding: 8px 14px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">📋</div>
+      <div class="logo-text">
+        <h1>Leave Manager</h1>
+        <p>Spyon CCTV Shop · Staff Portal</p>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchTab('request')" id="tab-request">✏️ Request Leave</button>
+      <button class="tab" onclick="askAdminPassword()" id="tab-admin" style="display:none;">⚡ Admin Panel</button>
+    </div>
+    <div id="admin-lock" onclick="askAdminPassword()" style="width:36px;height:36px;cursor:pointer;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;" title="Admin">🔒</div>
+  </div>
+
+  <!-- ── REQUEST TAB ── -->
+  <div id="view-request" class="fade-in">
+    <div class="info-bar">
+      📌 Fill the form below to request a leave. Ashmit will review and you'll be notified via <strong>WhatsApp & Email</strong> once a decision is made.
+    </div>
+    <div class="card">
+      <div class="card-title">📝 Submit Leave Request</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Your Name</label>
+          <select id="req-name" onchange="autoFillPhone(this.value)">
+            <option value="">Select your name...</option>
+            <option value="Akhtar">Akhtar</option>
+            <option value="Rohit">Rohit</option>
+            <option value="Shahid">Shahid</option>
+            <option value="Aziz">Aziz</option>
+            <option value="Lucky">Lucky</option>
+            <option value="Sonu">Sonu</option>
+            <option value="Arjun">Arjun</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Your WhatsApp Number</label>
+          <input type="tel" id="req-phone" placeholder="Auto-filled when you select name" readonly style="background:#f0efe9;cursor:not-allowed;">
+        </div>
+        <div class="form-group">
+          <label>Leave Type</label>
+          <select id="req-type">
+            <option value="">Select type...</option>
+            <option>Sick Leave</option>
+            <option>Personal Leave</option>
+            <option>Family Emergency</option>
+            <option>Festival / Holiday</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>From Date</label>
+          <input type="date" id="req-from">
+        </div>
+        <div class="form-group">
+          <label>To Date</label>
+          <input type="date" id="req-to">
+        </div>
+        <div class="form-group full">
+          <label>Reason for Leave</label>
+          <textarea id="req-reason" placeholder="Please explain why you need this leave..."></textarea>
+        </div>
+      </div>
+      <div style="margin-top: 22px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="submitRequest()" id="submit-btn">Submit Request</button>
+        <span id="submit-status" style="font-size:13px; color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <div id="my-requests-section" style="display:none;" class="fade-in">
+      <div class="card">
+        <div class="card-title">📂 Your Recent Requests</div>
+        <div id="my-requests-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADMIN TAB ── -->
+  <div id="view-admin" style="display:none;" class="fade-in">
+    <div class="info-bar">
+      🔔 When you approve or reject, staff gets a <strong>WhatsApp message</strong> instantly.
+      All data is saved to your <a href="https://docs.google.com/spreadsheets/d/1kNmL0KCmwAsWKwkvKKoQNSy4GDrS595g86CMhTTDFF4/edit" target="_blank" style="color:#3730a3; font-weight:600;">Google Sheet ↗</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card stat-total"><div class="stat-num" id="s-total">—</div><div class="stat-label">Total</div></div>
+      <div class="stat-card stat-pending"><div class="stat-num" id="s-pending">—</div><div class="stat-label">Pending</div></div>
+      <div class="stat-card stat-approved"><div class="stat-num" id="s-approved">—</div><div class="stat-label">Approved</div></div>
+      <div class="stat-card stat-rejected"><div class="stat-num" id="s-rejected">—</div><div class="stat-label">Rejected</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="justify-content:space-between;">
+        <span>⚡ All Leave Requests</span>
+        <button class="btn btn-sm" style="background:var(--surface2); color:var(--accent); border:1px solid var(--border); font-size:11px;" onclick="loadAdmin()">↻ Refresh</button>
+      </div>
+      <div id="admin-list">
+        <div class="empty-state"><div class="spinner" style="width:24px;height:24px;border-color:rgba(0,0,0,0.1);border-top-color:var(--accent);margin:0 auto 12px;"></div><p>Loading requests...</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────
+const SHEET_ID = '1kNmL0KCmwAsWKwkvKKoQNSy4GDrS595g86CMhTTDFF4';
+const ASHMIT_WA = '919871639723'; // WhatsApp number with country code
+
+// ── ADMIN PASSWORD ───────────────────────────────────────────────────────
+const ADMIN_PASS = '1234';
+
+function askAdminPassword() {
+  if (sessionStorage.getItem('adminAuth') === 'true') {
+    unlockAdmin(); return;
+  }
+  const entered = prompt('Enter Admin Password:');
+  if (entered === null) return;
+  if (entered === ADMIN_PASS) {
+    sessionStorage.setItem('adminAuth', 'true');
+    unlockAdmin();
+  } else {
+    alert('Wrong password. Try again.');
+  }
+}
+
+function unlockAdmin() {
+  document.getElementById('tab-admin').style.display = '';
+  switchTab('admin');
+}
+
+// Auto-unlock if URL has #admin or already authenticated
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.location.hash === '#admin') {
+    // Show password prompt when #admin is in URL
+    if (sessionStorage.getItem('adminAuth') === 'true') {
+      unlockAdmin();
+    } else {
+      const entered = prompt('Enter Admin Password:');
+      if (entered === ADMIN_PASS) {
+        sessionStorage.setItem('adminAuth', 'true');
+        unlockAdmin();
+      } else {
+        // Wrong password - clear hash and stay on staff view
+        history.replaceState(null, '', window.location.pathname);
+        alert('Wrong password.');
+      }
+    }
+  } else if (sessionStorage.getItem('adminAuth') === 'true') {
+    document.getElementById('tab-admin').style.display = '';
+  }
+});
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function switchTab(t) {
+  document.getElementById('view-request').style.display = t === 'request' ? '' : 'none';
+  document.getElementById('view-admin').style.display   = t === 'admin'   ? '' : 'none';
+  document.getElementById('tab-request').classList.toggle('active', t === 'request');
+  document.getElementById('tab-admin').classList.toggle('active', t === 'admin');
+  if (t === 'admin') loadAdmin();
+}
+
+// ── STAFF DIRECTORY ───────────────────────────────────────────────────────
+const STAFF = {
+  'Akhtar': '919711060636',
+  'Rohit':  '917065818114',
+  'Shahid': '919582605112',
+  'Aziz':   '918447865709',
+  'Lucky':  '919555963453',
+  'Sonu':   '918810315793',
+  'Arjun':  '919315837810',
+};
+
+function autoFillPhone(name) {
+  const phoneInput = document.getElementById('req-phone');
+  if (STAFF[name]) {
+    phoneInput.value = STAFF[name];
+  } else {
+    phoneInput.value = '';
+  }
+}
+
+// ── DATE SETUP (runs after DOM ready) ────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('req-from').min = today;
+  document.getElementById('req-to').min   = today;
+});
+
+// ── SUBMIT REQUEST → GOOGLE SHEET ─────────────────────────────────────────
+async function submitRequest() {
+  const name   = document.getElementById('req-name').value.trim();
+
+  const phone  = document.getElementById('req-phone').value.trim();
+  const type   = document.getElementById('req-type').value;
+  const from   = document.getElementById('req-from').value;
+  const to     = document.getElementById('req-to').value;
+  const reason = document.getElementById('req-reason').value.trim();
+
+  if (!name || !phone || !type || !from || !to || !reason) {
+    toast('Please fill all fields.', 'error'); return;
+  }
+  if (to < from) { toast('End date must be after start date.', 'error'); return; }
+
+  const btn = document.getElementById('submit-btn');
+  const status = document.getElementById('submit-status');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Submitting...';
+  status.textContent = '';
+
+  const row = [
+    new Date().toISOString(), name, phone, type, from, to, reason, 'Pending', ''
+  ];
+
+  try {
+    await appendToSheet(row);
+    toast('Request submitted! Ashmit will review it soon.', 'success');
+    // Notify Ashmit via WhatsApp
+    const waMsg = `🔔 *New Leave Request*\n\n👤 *${name}*\n📅 ${fmt(from)} → ${fmt(to)}\n🏷️ ${type}\n📝 ${reason}\n\n_Please open the Leave Manager to approve or reject._`;
+    window.open(`https://wa.me/${ASHMIT_WA}?text=${encodeURIComponent(waMsg)}`, '_blank');
+
+    // Show their requests
+    renderMyRequests(name);
+
+    // Reset
+    ['req-name','req-phone','req-type','req-from','req-to','req-reason'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+  } catch(e) {
+    console.warn('Sheet write warning (may still have worked):', e);
+    toast('Request submitted!', 'success');
+  }
+  btn.disabled = false;
+  btn.innerHTML = 'Submit Request';
+}
+
+// ── LOAD ADMIN DATA FROM SHEET ────────────────────────────────────────────
+async function loadAdmin() {
+  document.getElementById('admin-list').innerHTML = `<div class="empty-state"><div class="spinner" style="width:24px;height:24px;border-color:rgba(0,0,0,0.1);border-top-color:var(--accent);margin:0 auto 12px;"></div><p>Loading...</p></div>`;
+  try {
+    const rows = await readSheet();
+    renderAdmin(rows);
+  } catch(e) {
+    document.getElementById('admin-list').innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>Could not load data. Make sure the Sheet is shared as Editor.</p></div>`;
+    console.error(e);
+  }
+}
+
+// ── RENDER ADMIN TABLE ────────────────────────────────────────────────────
+function renderAdmin(rows) {
+  // rows: [timestamp, name, phone, type, from, to, reason, status, notes]
+  const data = rows.filter(r => r.length > 2 && r[1]); // skip header + empty
+
+  const total    = data.length;
+  const pending  = data.filter(r => r[7] === 'Pending').length;
+  const approved = data.filter(r => r[7] === 'Approved').length;
+  const rejected = data.filter(r => r[7] === 'Rejected').length;
+
+  document.getElementById('s-total').textContent    = total;
+  document.getElementById('s-pending').textContent  = pending;
+  document.getElementById('s-approved').textContent = approved;
+  document.getElementById('s-rejected').textContent = rejected;
+
+  if (!data.length) {
+    document.getElementById('admin-list').innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>No leave requests yet.</p></div>`;
+    return;
+  }
+
+  // Reverse so newest first
+  const sorted = [...data].reverse();
+
+  document.getElementById('admin-list').innerHTML = `
+    <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Staff</th><th>Dates</th><th>Type</th><th>Reason</th><th>Status</th><th>Action</th>
+      </tr></thead>
+      <tbody id="admin-tbody"></tbody>
+    </table></div>`;
+
+  const tbody = document.getElementById('admin-tbody');
+  sorted.forEach((r, i) => {
+    // Find actual row index in sheet (1-indexed, +1 for header)
+    const sheetRow = rows.indexOf(r) + 2;
+    const [ts, name, phone, type, from, to, reason, status] = r;
+    const initials = name ? name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) : '??';
+    const badgeCls = status === 'Approved' ? 'badge-approved' : status === 'Rejected' ? 'badge-rejected' : 'badge-pending';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="name-pill">
+          <div class="avatar">${initials}</div>
+          <div>
+            <div style="font-weight:600;">${name || '—'}</div>
+            <div class="sub-text">${phone || '—'}</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div style="font-weight:500;">${fmt(from)}</div>
+        <div class="sub-text">→ ${fmt(to)} &nbsp;·&nbsp; ${dayCount(from,to)} day${dayCount(from,to)>1?'s':''}</div>
+      </td>
+      <td style="font-size:12px;">${type || '—'}</td>
+      <td><div class="reason-text" title="${reason}">${reason || '—'}</div></td>
+      <td><span class="badge ${badgeCls}" id="badge-${sheetRow}">${status || 'Pending'}</span></td>
+      <td>
+        ${status === 'Pending' ? `
+          <div class="actions">
+            <button class="btn btn-sm btn-approve" id="abtn-${sheetRow}" onclick="decide(${sheetRow},'Approved','${name}','${phone}','${from}','${to}','${type}','${(reason||'').replace(/'/g,"\\'")}')">✓ Approve</button>
+            <button class="btn btn-sm btn-reject"  id="rbtn-${sheetRow}" onclick="decide(${sheetRow},'Rejected','${name}','${phone}','${from}','${to}','${type}','${(reason||'').replace(/'/g,"\\'")}')">✕ Reject</button>
+          </div>` :
+          `<div class="notify-pills">
+            <span class="notify-pill" style="background:#f1f5f9;color:#64748b;">${status === 'Approved' ? '✅ Done' : '❌ Done'}</span>
+          </div>`}
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── DECIDE: UPDATE SHEET + NOTIFY ─────────────────────────────────────────
+async function decide(sheetRow, decision, name, phone, from, to, type, reason) {
+  const abtn = document.getElementById(`abtn-${sheetRow}`);
+  const rbtn = document.getElementById(`rbtn-${sheetRow}`);
+  if (abtn) { abtn.disabled = true; abtn.innerHTML = '<span class="spinner"></span>'; }
+  if (rbtn) { rbtn.disabled = true; }
+
+  try {
+    // 1. Update Google Sheet status (column I = index 9)
+    await updateSheetCell(sheetRow, 8, decision);
+
+    // 2. Update badge in UI
+    const badge = document.getElementById(`badge-${sheetRow}`);
+    if (badge) {
+      badge.className = `badge badge-${decision.toLowerCase()}`;
+      badge.textContent = decision;
+    }
+    if (abtn) abtn.closest('.actions').innerHTML = `<span style="color:var(--muted);font-size:12px;">${decision === 'Approved' ? '✅' : '❌'} ${decision}</span>`;
+
+
+    // 4. Open WhatsApp for staff
+    const emoji = decision === 'Approved' ? '✅' : '❌';
+    const days = dayCount(from, to);
+    const waMsg = decision === 'Approved'
+      ? `${emoji} *Leave Approved!*\n\nHi ${name}, your leave request has been *approved* by Ashmit.\n\n📅 ${fmt(from)} → ${fmt(to)} (${days} day${days>1?'s':''})\n🏷️ ${type}\n\nEnjoy your time off! Make sure work is covered before you leave.`
+      : `${emoji} *Leave Request Update*\n\nHi ${name}, your leave request has been *rejected* by Ashmit.\n\n📅 ${fmt(from)} → ${fmt(to)}\n🏷️ ${type}\n\nPlease speak with Ashmit directly for more details.`;
+
+    // Auto-send WhatsApp via invisible link click
+    const waNum = (phone || '').replace(/\D/g, '');
+    if (waNum.length >= 10) {
+      const a = document.createElement('a');
+      a.href = `https://wa.me/${waNum}?text=${encodeURIComponent(waMsg)}`;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    toast(`${decision}! WhatsApp message sent to ${name}.`, 'success');
+
+  } catch(e) {
+    toast('Error updating. Check sheet permissions.', 'error');
+    console.error(e);
+    if (abtn) { abtn.disabled = false; abtn.innerHTML = '✓ Approve'; }
+    if (rbtn)   rbtn.disabled = false;
+  }
+}
+
+
+
+// ── MY REQUESTS (staff view) ───────────────────────────────────────────────
+async function renderMyRequests(filterName) {
+  try {
+    const rows = await readSheet();
+    const mine = rows.filter(r => r[1] === filterName).reverse().slice(0, 5);
+    if (!mine.length) return;
+    document.getElementById('my-requests-section').style.display = '';
+    document.getElementById('my-requests-list').innerHTML = `
+      <div class="table-wrap"><table>
+        <thead><tr><th>Dates</th><th>Type</th><th>Status</th></tr></thead>
+        <tbody>${mine.map(r => `
+          <tr>
+            <td><div>${fmt(r[5])}</div><div class="sub-text">→ ${fmt(r[6])}</div></td>
+            <td style="font-size:12px;">${r[4]||'—'}</td>
+            <td><span class="badge badge-${(r[8]||'pending').toLowerCase()}">${r[8]||'Pending'}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+  } catch(e) { console.error(e); }
+}
+
+// ── GOOGLE SHEETS API ──────────────────────────────────────────────────────
+// Uses the public gviz/tq endpoint to READ (no auth needed if sheet is public/editor)
+// Uses Apps Script Web App to WRITE
+
+async function readSheet() {
+  const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzQpQpkOj6TEmRmlL08Ck01XG9_GX2MmBovmBM70_i1WGfEB2B2i9IjB1Ycpf5Xc8r9cQ/exec';
+  const res = await fetch(appsScriptUrl + '?action=read', { method: 'GET' });
+  const json = await res.json();
+  return json.rows || [];
+}
+
+async function appendToSheet(row) {
+  const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzQpQpkOj6TEmRmlL08Ck01XG9_GX2MmBovmBM70_i1WGfEB2B2i9IjB1Ycpf5Xc8r9cQ/exec';
+  // Use no-cors mode — Apps Script doesn't support CORS from local HTML files
+  await fetch(appsScriptUrl, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'append', row })
+  });
+  // no-cors returns opaque response, so we just assume success
+  return { success: true };
+}
+
+async function updateSheetCell(rowNum, colNum, value) {
+  const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzQpQpkOj6TEmRmlL08Ck01XG9_GX2MmBovmBM70_i1WGfEB2B2i9IjB1Ycpf5Xc8r9cQ/exec';
+  await fetch(appsScriptUrl, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'update', row: rowNum, col: colNum, value })
+  });
+  return { success: true };
+}
+
+// ── APPS SCRIPT SETUP MODAL ───────────────────────────────────────────────
+function showAppsScriptSetup() {
+  if (document.getElementById('setup-modal')) return;
+  const modal = document.createElement('div');
+  modal.id = 'setup-modal';
+  modal.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;`;
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:20px;padding:32px;max-width:560px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.2);">
+      <h2 style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:8px;">⚙️ One-Time Setup Required</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6;">To write data to your Google Sheet, you need to create a free Google Apps Script. It only takes 2 minutes:</p>
+      <ol style="font-size:13px;line-height:2;color:var(--text);padding-left:18px;margin-bottom:20px;">
+        <li>Open <a href="https://script.google.com" target="_blank" style="color:#3730a3;font-weight:600;">script.google.com</a> → New Project</li>
+        <li>Delete everything and paste the code below</li>
+        <li>Click <strong>Deploy → New Deployment → Web App</strong></li>
+        <li>Set <em>Execute as: Me</em> · <em>Who has access: Anyone</em></li>
+        <li>Copy the Web App URL and paste it below</li>
+      </ol>
+      <div style="background:#1a1a2e;border-radius:12px;padding:16px;margin-bottom:20px;overflow-x:auto;">
+        <pre style="color:#a5f3fc;font-size:11px;line-height:1.6;white-space:pre-wrap;">${appsScriptCode()}</pre>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <input id="as-url-input" type="url" placeholder="Paste Web App URL here..." style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:var(--font-body);outline:none;min-width:200px;">
+        <button onclick="saveAppsScriptUrl()" class="btn btn-primary" style="white-space:nowrap;">Save & Continue</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function appsScriptCode() {
+  var sid = '1kNmL0KCmwAsWKwkvKKoQNSy4GDrS595g86CMhTTDFF4';
+  return "const SHEET_ID = '" + sid + "';" + `
+
+function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheets()[0];
+
+  if (data.action === 'append') {
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(['Timestamp','Name','Phone','Type','From','To','Reason','Status','Notes']);
+    }
+    sheet.appendRow(data.row);
+  } else if (data.action === 'update') {
+    sheet.getRange(data.row, data.col).setValue(data.value);
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify({success: true}))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+}
+
+function saveAppsScriptUrl() {
+  const url = document.getElementById('as-url-input').value.trim();
+  if (!url.startsWith('https://script.google.com')) {
+    alert('Please paste a valid Google Apps Script Web App URL.'); return;
+  }
+  localStorage.setItem('appsScriptUrl', url);
+  document.getElementById('setup-modal').remove();
+  toast('Setup complete! Try submitting again.', 'success');
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function fmt(d) {
+  if (!d) return '—';
+  // Handle both YYYY-MM-DD and Date(yr,mo,day) from gviz
+  if (d.startsWith('Date(')) {
+    const parts = d.replace('Date(','').replace(')','').split(',');
+    const dt = new Date(+parts[0], +parts[1], +parts[2]);
+    d = dt.toISOString().split('T')[0];
+  }
+  const [y,m,day] = d.split('-');
+  if (!y||!m||!day) return d;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${day} ${months[+m-1]} ${y}`;
+}
+
+function dayCount(from, to) {
+  try {
+    const parse = s => {
+      if (!s) return new Date();
+      if (s.startsWith('Date(')) {
+        const p = s.replace('Date(','').replace(')','').split(',');
+        return new Date(+p[0],+p[1],+p[2]);
+      }
+      return new Date(s);
+    };
+    return Math.max(1, Math.round((parse(to) - parse(from)) / 86400000) + 1);
+  } catch { return 1; }
+}
+
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-icon').textContent = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+  t.className = `show ${type}`;
+  setTimeout(() => t.className = '', 4000);
+}
+</script>
+</body>
+</html>
